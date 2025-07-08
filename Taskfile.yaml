@@ -45,7 +45,7 @@ tasks:
         find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GOFUMPT}} -extra -w {} +
       - |
         echo "🎯 Сортируем импорты через gci ..."
-        find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GCI}} write -s standard -s default -s "prefix(github.com/Lempi-sudo/microservices-course/)" {} +
+        find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GCI}} write -s standard -s default -s "prefix(github.com/Lempi-sudo/lempi-rocket-project/)" {} +
 
   install-golangci-lint:
     desc: "Устанавливает golangci-lint в каталог bin"
