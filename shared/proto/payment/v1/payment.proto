@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+// Package payment.v1 содержит API для работы с платежами
+package payment.v1;
+
+option go_package = "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1;payment_v1";
+
+service PaymentService {
+    rpc PayOrder(PayOrderRequest) returns (PayOrderResponse); 
+}
+
+// Способы оплаты
+enum PaymentMethod{
+    // Неизвестный способ оплаты
+    UNKNOWN_UNSPECIFIED = 0;
+    // Оплата картой
+    CARD = 1;	
+    // Оплата через СБП
+    SBP = 2;
+    // Оплата кредитной картой
+    CREDIT_CARD	= 3;
+    // Оплата средствами инвестора
+    INVESTOR_MONEY = 4;	
+    
+}
+
+// Информация о заказе для оплаты
+message OrderInfo {
+    string order_uuid = 1;
+    string user_uuid = 2;
+    PaymentMethod payment_method = 3;  
+}
+
+// Запрос на оплату заказа
+message PayOrderRequest {
+    OrderInfo order = 1;  
+}
+
+// Ответ на оплату заказа
+message PayOrderResponse {
+    string uuid = 1;
+}
+
