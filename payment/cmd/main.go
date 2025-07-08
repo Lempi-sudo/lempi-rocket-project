@@ -33,7 +33,7 @@ func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 
 	payment_method := req.GetOrder().PaymentMethod
 	if payment_method == paymentV1.PaymentMethod_UNKNOWN_UNSPECIFIED {
-		return nil, status.Errorf(codes.InvalidArgument, "unspecified paymentV1")
+		return nil, status.Errorf(codes.InvalidArgument, "Payment method unspecified ")
 	}
 
 	userUuid := req.GetOrder().UserUuid
