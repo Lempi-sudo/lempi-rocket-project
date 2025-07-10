@@ -22,7 +22,7 @@ vars:
   PROTOC_GEN_GO: '{{.BIN_DIR}}/protoc-gen-go'
   PROTOC_GEN_GO_GRPC: '{{.BIN_DIR}}/protoc-gen-go-grpc'
 
-  OPEN_API_WEATHER_V1_BASE: '{{.ROOT_DIR}}shared/api/order/v1/order_openapi.yaml'
+  OPEN_API_ORDER_V1_BASE: '{{.ROOT_DIR}}/shared/api/order/v1/order_openapi.yaml'
 
   MODULES: inventory order payment 
 tasks:
@@ -134,7 +134,7 @@ tasks:
     deps: [ ogen:install, yq:install]
     cmds:
       - |
-        TARGET=$({{.YQ}} '.x-ogen.target' {{.OPEN_API_WEATHER_V1_BASE}})
-        PACKAGE=$({{.YQ}} '.x-ogen.package' {{.OPEN_API_WEATHER_V1_BASE}})
-        {{.OGEN}} --target "$TARGET" --package "$PACKAGE" --clean {{.OPEN_API_WEATHER_V1_BASE}} || exit 1
+        TARGET=$({{.YQ}} '.x-ogen.target' {{.OPEN_API_ORDER_V1_BASE}})
+        PACKAGE=$({{.YQ}} '.x-ogen.package' {{.OPEN_API_ORDER_V1_BASE}})
+        {{.OGEN}} --target "$TARGET" --package "$PACKAGE" --clean {{.OPEN_API_ORDER_V1_BASE}} || exit 1
 
