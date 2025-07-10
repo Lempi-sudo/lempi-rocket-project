@@ -9,14 +9,20 @@ vars:
   BUF_VERSION: '1.53.0'
   PROTOC_GEN_GO_VERSION: 'v1.36.6'
   PROTOC_GEN_GO_GRPC_VERSION: 'v1.5.1'
+  OGEN_VERSION: 'v1.14.0'
+  YQ_VERSION: 'v4.45.2'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint'
   GCI: '{{.BIN_DIR}}/gci'
   GOFUMPT: '{{.BIN_DIR}}/gofumpt'
+  OGEN: '{{.BIN_DIR}}/ogen'
+  YQ: '{{.BIN_DIR}}/yq'
   BUF: '{{.BIN_DIR}}/buf'
   PROTOC_GEN_GO: '{{.BIN_DIR}}/protoc-gen-go'
   PROTOC_GEN_GO_GRPC: '{{.BIN_DIR}}/protoc-gen-go-grpc'
+
+  OPEN_API_WEATHER_V1_BASE: '{{.ROOT_DIR}}shared/api/order/v1/order_openapi.yaml'
 
   MODULES: inventory order payment 
 tasks:
@@ -103,3 +109,32 @@ tasks:
     dir: shared/proto
     cmds:
       - '{{.BUF}} generate'
+
+
+  ogen:install:
+    desc: "Скачивает ogen в папку bin"
+    cmds:
+      - |
+        [ -f {{.OGEN}} ] || {
+          mkdir -p {{.BIN_DIR}}
+          GOBIN={{.BIN_DIR}} go install github.com/ogen-go/ogen/cmd/ogen@{{.OGEN_VERSION}}
+        }
+
+  yq:install:
+    desc: "Устанавливает yq в bin/ при необходимости"
+    cmds:
+      - |
+        [ -f {{.YQ}} ] || {
+          echo '📦 Installing yq...'
+          GOBIN={{.BIN_DIR}} go install github.com/mikefarah/yq/v4@{{.YQ_VERSION}}
+        }
+
+  ogen:gen:
+    desc: "Генерация Go-кода из всех OpenAPI-деклараций с x-ogen"
+    deps: [ ogen:install, yq:install]
+    cmds:
+      - |
+        TARGET=$({{.YQ}} '.x-ogen.target' {{.OPEN_API_WEATHER_V1_BASE}})
+        PACKAGE=$({{.YQ}} '.x-ogen.package' {{.OPEN_API_WEATHER_V1_BASE}})
+        {{.OGEN}} --target "$TARGET" --package "$PACKAGE" --clean {{.OPEN_API_WEATHER_V1_BASE}} || exit 1
+

@@ -1,0 +1,16 @@
+PaymentMethod:
+  type: string
+  enum:
+    - CARD
+    - CASH
+    - BANK_TRANSFER
+    - QR
+  description: Метод оплаты
+
+OrderStatus:
+  type: string
+  enum:
+    - PENDING_PAYMENT
+    - PAID
+    - CANCELLED
+  description: Статус заказа

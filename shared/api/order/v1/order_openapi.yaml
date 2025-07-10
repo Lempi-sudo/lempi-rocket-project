@@ -1,0 +1,22 @@
+openapi: 3.0.3
+info:
+  title: OrderService API
+  version: 1.0.0
+  description: API для работы с Order Service
+x-ogen:
+  target: ./shared/pkg/openapi/order/v1
+  package: order_v1
+  clean: true
+
+tags:
+  - name: Order
+    description: Операции с заказами — создание и оплата заказа
+
+paths:
+  /api/v1/orders:
+    $ref: ./paths/orders.yaml
+
+components:
+  schemas:
+    Order:
+      $ref: ./components/order_dto.yaml
