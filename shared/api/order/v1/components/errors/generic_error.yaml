@@ -1,11 +1,11 @@
 type: object
 required:
   - message
+  - code
 properties:
   message:
     type: string
-    description: Сообщение об ошибке
+    description: Описание ошибки 
   code:
-    type: string
-    description: Код ошибки
-    nullable: true
+    type: integer
+    description: HTTP-код ошибки

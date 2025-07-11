@@ -27,8 +27,8 @@ type inventoryService struct {
 
 func NewInventoryService() *inventoryService {
 	parts := map[string]*inventoryV1.Part{
-		"uuid-1": {
-			Uuid:          "uuid-1",
+		"550e8400-e29b-41d4-a716-446655440000": {
+			Uuid:          "550e8400-e29b-41d4-a716-446655440000",
 			Name:          "Main Engine",
 			Description:   "Primary propulsion engine",
 			Price:         1000000.0,
@@ -52,8 +52,8 @@ func NewInventoryService() *inventoryService {
 			},
 			// CreatedAt, UpdatedAt — заполните при необходимости
 		},
-		"uuid-2": {
-			Uuid:          "uuid-2",
+		"550e8400-e29b-41d4-a716-446655440001": {
+			Uuid:          "550e8400-e29b-41d4-a716-446655440001",
 			Name:          "Porthole",
 			Description:   "Window for space view",
 			Price:         50000.0,
@@ -75,8 +75,8 @@ func NewInventoryService() *inventoryService {
 				"tint": {Kind: &inventoryV1.Value_StringValue{StringValue: "UV-protect"}},
 			},
 		},
-		"uuid-3": {
-			Uuid:          "uuid-3",
+		"550e8400-e29b-41d4-a716-446655440003": {
+			Uuid:          "550e8400-e29b-41d4-a716-446655440003",
 			Name:          "Fuel Tank",
 			Description:   "Liquid fuel storage tank",
 			Price:         250000.0,
@@ -99,8 +99,8 @@ func NewInventoryService() *inventoryService {
 				"material": {Kind: &inventoryV1.Value_StringValue{StringValue: "Titanium"}},
 			},
 		},
-		"uuid-4": {
-			Uuid:          "uuid-4",
+		"550e8400-e29b-41d4-a716-446655440004": {
+			Uuid:          "550e8400-e29b-41d4-a716-446655440004",
 			Name:          "Wing Panel",
 			Description:   "Aerodynamic wing component",
 			Price:         75000.0,

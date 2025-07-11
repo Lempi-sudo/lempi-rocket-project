@@ -92,10 +92,10 @@ func (*CreateOrderResponse) createOrderRes() {}
 
 // Ref: #
 type GenericError struct {
-	// Сообщение об ошибке.
+	// Описание ошибки.
 	Message string `json:"message"`
-	// Код ошибки.
-	Code OptNilString `json:"code"`
+	// HTTP-код ошибки.
+	Code int `json:"code"`
 }
 
 // GetMessage returns the value of Message.
@@ -104,7 +104,7 @@ func (s *GenericError) GetMessage() string {
 }
 
 // GetCode returns the value of Code.
-func (s *GenericError) GetCode() OptNilString {
+func (s *GenericError) GetCode() int {
 	return s.Code
 }
 
@@ -114,7 +114,7 @@ func (s *GenericError) SetMessage(val string) {
 }
 
 // SetCode sets the value of Code.
-func (s *GenericError) SetCode(val OptNilString) {
+func (s *GenericError) SetCode(val int) {
 	s.Code = val
 }
 
@@ -125,69 +125,6 @@ func (*GetOrderByUUIDInternalServerError) getOrderByUUIDRes() {}
 type GetOrderByUUIDNotFound GenericError
 
 func (*GetOrderByUUIDNotFound) getOrderByUUIDRes() {}
-
-// NewOptNilString returns new OptNilString with value set to v.
-func NewOptNilString(v string) OptNilString {
-	return OptNilString{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptNilString is optional nullable string.
-type OptNilString struct {
-	Value string
-	Set   bool
-	Null  bool
-}
-
-// IsSet returns true if OptNilString was set.
-func (o OptNilString) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptNilString) Reset() {
-	var v string
-	o.Value = v
-	o.Set = false
-	o.Null = false
-}
-
-// SetTo sets value to v.
-func (o *OptNilString) SetTo(v string) {
-	o.Set = true
-	o.Null = false
-	o.Value = v
-}
-
-// IsNull returns true if value is Null.
-func (o OptNilString) IsNull() bool { return o.Null }
-
-// SetToNull sets value to null.
-func (o *OptNilString) SetToNull() {
-	o.Set = true
-	o.Null = true
-	var v string
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptNilString) Get() (v string, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptNilString) Or(d string) string {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
 
 // NewOptNilUUID returns new OptNilUUID with value set to v.
 func NewOptNilUUID(v uuid.UUID) OptNilUUID {
