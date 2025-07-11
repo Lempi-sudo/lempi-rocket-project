@@ -1,6 +1,7 @@
 post:
   tags:
     - Order
+    - Post
   summary: Создание нового заказа
   operationId: CreateOrder
   description: Создаёт новый заказ на основе выбранных пользователем деталей

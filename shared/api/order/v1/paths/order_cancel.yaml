@@ -1,6 +1,7 @@
 post:
   tags:
     - Order
+    - Post
   summary: Отмена заказа
   operationId: CancelOrderByUUID
   description: Отменяет заказ

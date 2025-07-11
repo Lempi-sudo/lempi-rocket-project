@@ -1,6 +1,7 @@
 post:
   tags:
     - Order
+    - Post
   summary: Оплата заказа
   operationId: PayOrder
   description: Проводит оплату ранее созданного заказа
