@@ -17,6 +17,7 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
+	"github.com/ogen-go/ogen/otelogen"
 )
 
 type codeRecorder struct {
@@ -29,21 +30,22 @@ func (c *codeRecorder) WriteHeader(status int) {
 	c.ResponseWriter.WriteHeader(status)
 }
 
-// handleAPIV1OrdersOrderUUIDCancelPostRequest handles POST /api/v1/orders/{order_uuid}/cancel operation.
+// handleCancelOrderByUUIDRequest handles CancelOrderByUUID operation.
 //
 // Отменяет заказ.
 //
 // POST /api/v1/orders/{order_uuid}/cancel
-func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleCancelOrderByUUIDRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("CancelOrderByUUID"),
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/cancel"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), APIV1OrdersOrderUUIDCancelPostOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), CancelOrderByUUIDOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -98,11 +100,11 @@ func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, arg
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: APIV1OrdersOrderUUIDCancelPostOperation,
-			ID:   "",
+			Name: CancelOrderByUUIDOperation,
+			ID:   "CancelOrderByUUID",
 		}
 	)
-	params, err := decodeAPIV1OrdersOrderUUIDCancelPostParams(args, argsEscaped, r)
+	params, err := decodeCancelOrderByUUIDParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -113,13 +115,13 @@ func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, arg
 		return
 	}
 
-	var response APIV1OrdersOrderUUIDCancelPostRes
+	var response CancelOrderByUUIDRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    APIV1OrdersOrderUUIDCancelPostOperation,
+			OperationName:    CancelOrderByUUIDOperation,
 			OperationSummary: "Отмена заказа",
-			OperationID:      "",
+			OperationID:      "CancelOrderByUUID",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -132,8 +134,8 @@ func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, arg
 
 		type (
 			Request  = struct{}
-			Params   = APIV1OrdersOrderUUIDCancelPostParams
-			Response = APIV1OrdersOrderUUIDCancelPostRes
+			Params   = CancelOrderByUUIDParams
+			Response = CancelOrderByUUIDRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -142,14 +144,14 @@ func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, arg
 		](
 			m,
 			mreq,
-			unpackAPIV1OrdersOrderUUIDCancelPostParams,
+			unpackCancelOrderByUUIDParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.APIV1OrdersOrderUUIDCancelPost(ctx, params)
+				response, err = s.h.CancelOrderByUUID(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.APIV1OrdersOrderUUIDCancelPost(ctx, params)
+		response, err = s.h.CancelOrderByUUID(ctx, params)
 	}
 	if err != nil {
 		defer recordError("Internal", err)
@@ -157,7 +159,7 @@ func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, arg
 		return
 	}
 
-	if err := encodeAPIV1OrdersOrderUUIDCancelPostResponse(response, w, span); err != nil {
+	if err := encodeCancelOrderByUUIDResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
@@ -166,158 +168,23 @@ func (s *Server) handleAPIV1OrdersOrderUUIDCancelPostRequest(args [1]string, arg
 	}
 }
 
-// handleAPIV1OrdersOrderUUIDGetRequest handles GET /api/v1/orders/{order_uuid} operation.
+// handleCreateOrderRequest handles CreateOrder operation.
 //
-// Возвращает информацию о заказе по его UUID.
+// Создаёт новый заказ на основе выбранных
+// пользователем деталей.
 //
-// GET /api/v1/orders/{order_uuid}
-func (s *Server) handleAPIV1OrdersOrderUUIDGetRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// POST /api/v1/orders
+func (s *Server) handleCreateOrderRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), APIV1OrdersOrderUUIDGetOperation,
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Add Labeler to context.
-	labeler := &Labeler{attrs: otelAttrs}
-	ctx = contextWithLabeler(ctx, labeler)
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-
-		attrSet := labeler.AttributeSet()
-		attrs := attrSet.ToSlice()
-		code := statusWriter.status
-		if code != 0 {
-			codeAttr := semconv.HTTPResponseStatusCode(code)
-			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
-		}
-		attrOpt := metric.WithAttributes(attrs...)
-
-		// Increment request counter.
-		s.requests.Add(ctx, 1, attrOpt)
-
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), attrOpt)
-	}()
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-
-			// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
-			// Span Status MUST be left unset if HTTP status code was in the 1xx, 2xx or 3xx ranges,
-			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
-			// max redirects exceeded), in which case status MUST be set to Error.
-			code := statusWriter.status
-			if code >= 100 && code < 500 {
-				span.SetStatus(codes.Error, stage)
-			}
-
-			attrSet := labeler.AttributeSet()
-			attrs := attrSet.ToSlice()
-			if code != 0 {
-				attrs = append(attrs, semconv.HTTPResponseStatusCode(code))
-			}
-
-			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: APIV1OrdersOrderUUIDGetOperation,
-			ID:   "",
-		}
-	)
-	params, err := decodeAPIV1OrdersOrderUUIDGetParams(args, argsEscaped, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		defer recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response APIV1OrdersOrderUUIDGetRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:          ctx,
-			OperationName:    APIV1OrdersOrderUUIDGetOperation,
-			OperationSummary: "Получить заказ по UUID",
-			OperationID:      "",
-			Body:             nil,
-			Params: middleware.Parameters{
-				{
-					Name: "order_uuid",
-					In:   "path",
-				}: params.OrderUUID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = APIV1OrdersOrderUUIDGetParams
-			Response = APIV1OrdersOrderUUIDGetRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackAPIV1OrdersOrderUUIDGetParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.APIV1OrdersOrderUUIDGet(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.APIV1OrdersOrderUUIDGet(ctx, params)
-	}
-	if err != nil {
-		defer recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeAPIV1OrdersOrderUUIDGetResponse(response, w, span); err != nil {
-		defer recordError("EncodeResponse", err)
-		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-		}
-		return
-	}
-}
-
-// handleAPIV1OrdersOrderUUIDPayPostRequest handles POST /api/v1/orders/{order_uuid}/pay operation.
-//
-// Проводит оплату ранее созданного заказа.
-//
-// POST /api/v1/orders/{order_uuid}/pay
-func (s *Server) handleAPIV1OrdersOrderUUIDPayPostRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
-	statusWriter := &codeRecorder{ResponseWriter: w}
-	w = statusWriter
-	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("CreateOrder"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/pay"),
+		semconv.HTTPRouteKey.String("/api/v1/orders"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), APIV1OrdersOrderUUIDPayPostOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), CreateOrderOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -372,21 +239,11 @@ func (s *Server) handleAPIV1OrdersOrderUUIDPayPostRequest(args [1]string, argsEs
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: APIV1OrdersOrderUUIDPayPostOperation,
-			ID:   "",
+			Name: CreateOrderOperation,
+			ID:   "CreateOrder",
 		}
 	)
-	params, err := decodeAPIV1OrdersOrderUUIDPayPostParams(args, argsEscaped, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		defer recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	request, close, err := s.decodeAPIV1OrdersOrderUUIDPayPostRequest(r)
+	request, close, err := s.decodeCreateOrderRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -402,13 +259,299 @@ func (s *Server) handleAPIV1OrdersOrderUUIDPayPostRequest(args [1]string, argsEs
 		}
 	}()
 
-	var response APIV1OrdersOrderUUIDPayPostRes
+	var response CreateOrderRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    APIV1OrdersOrderUUIDPayPostOperation,
+			OperationName:    CreateOrderOperation,
+			OperationSummary: "Создание нового заказа",
+			OperationID:      "CreateOrder",
+			Body:             request,
+			Params:           middleware.Parameters{},
+			Raw:              r,
+		}
+
+		type (
+			Request  = *CreateOrderRequest
+			Params   = struct{}
+			Response = CreateOrderRes
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			nil,
+			func(ctx context.Context, request Request, params Params) (response Response, err error) {
+				response, err = s.h.CreateOrder(ctx, request)
+				return response, err
+			},
+		)
+	} else {
+		response, err = s.h.CreateOrder(ctx, request)
+	}
+	if err != nil {
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeCreateOrderResponse(response, w, span); err != nil {
+		defer recordError("EncodeResponse", err)
+		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+		}
+		return
+	}
+}
+
+// handleGetOrderByUUIDRequest handles GetOrderByUUID operation.
+//
+// Возвращает информацию о заказе по его UUID.
+//
+// GET /api/v1/orders/{order_uuid}
+func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+	statusWriter := &codeRecorder{ResponseWriter: w}
+	w = statusWriter
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("GetOrderByUUID"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}"),
+	}
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), GetOrderByUUIDOperation,
+		trace.WithAttributes(otelAttrs...),
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+
+		attrSet := labeler.AttributeSet()
+		attrs := attrSet.ToSlice()
+		code := statusWriter.status
+		if code != 0 {
+			codeAttr := semconv.HTTPResponseStatusCode(code)
+			attrs = append(attrs, codeAttr)
+			span.SetAttributes(codeAttr)
+		}
+		attrOpt := metric.WithAttributes(attrs...)
+
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), attrOpt)
+	}()
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+
+			// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
+			// Span Status MUST be left unset if HTTP status code was in the 1xx, 2xx or 3xx ranges,
+			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
+			// max redirects exceeded), in which case status MUST be set to Error.
+			code := statusWriter.status
+			if code >= 100 && code < 500 {
+				span.SetStatus(codes.Error, stage)
+			}
+
+			attrSet := labeler.AttributeSet()
+			attrs := attrSet.ToSlice()
+			if code != 0 {
+				attrs = append(attrs, semconv.HTTPResponseStatusCode(code))
+			}
+
+			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: GetOrderByUUIDOperation,
+			ID:   "GetOrderByUUID",
+		}
+	)
+	params, err := decodeGetOrderByUUIDParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	var response GetOrderByUUIDRes
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:          ctx,
+			OperationName:    GetOrderByUUIDOperation,
+			OperationSummary: "Получить заказ по UUID",
+			OperationID:      "GetOrderByUUID",
+			Body:             nil,
+			Params: middleware.Parameters{
+				{
+					Name: "order_uuid",
+					In:   "path",
+				}: params.OrderUUID,
+			},
+			Raw: r,
+		}
+
+		type (
+			Request  = struct{}
+			Params   = GetOrderByUUIDParams
+			Response = GetOrderByUUIDRes
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			unpackGetOrderByUUIDParams,
+			func(ctx context.Context, request Request, params Params) (response Response, err error) {
+				response, err = s.h.GetOrderByUUID(ctx, params)
+				return response, err
+			},
+		)
+	} else {
+		response, err = s.h.GetOrderByUUID(ctx, params)
+	}
+	if err != nil {
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeGetOrderByUUIDResponse(response, w, span); err != nil {
+		defer recordError("EncodeResponse", err)
+		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+		}
+		return
+	}
+}
+
+// handlePayOrderRequest handles PayOrder operation.
+//
+// Проводит оплату ранее созданного заказа.
+//
+// POST /api/v1/orders/{order_uuid}/pay
+func (s *Server) handlePayOrderRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+	statusWriter := &codeRecorder{ResponseWriter: w}
+	w = statusWriter
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("PayOrder"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/pay"),
+	}
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), PayOrderOperation,
+		trace.WithAttributes(otelAttrs...),
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+
+		attrSet := labeler.AttributeSet()
+		attrs := attrSet.ToSlice()
+		code := statusWriter.status
+		if code != 0 {
+			codeAttr := semconv.HTTPResponseStatusCode(code)
+			attrs = append(attrs, codeAttr)
+			span.SetAttributes(codeAttr)
+		}
+		attrOpt := metric.WithAttributes(attrs...)
+
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), attrOpt)
+	}()
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+
+			// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
+			// Span Status MUST be left unset if HTTP status code was in the 1xx, 2xx or 3xx ranges,
+			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
+			// max redirects exceeded), in which case status MUST be set to Error.
+			code := statusWriter.status
+			if code >= 100 && code < 500 {
+				span.SetStatus(codes.Error, stage)
+			}
+
+			attrSet := labeler.AttributeSet()
+			attrs := attrSet.ToSlice()
+			if code != 0 {
+				attrs = append(attrs, semconv.HTTPResponseStatusCode(code))
+			}
+
+			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: PayOrderOperation,
+			ID:   "PayOrder",
+		}
+	)
+	params, err := decodePayOrderParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	request, close, err := s.decodePayOrderRequest(r)
+	if err != nil {
+		err = &ogenerrors.DecodeRequestError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeRequest", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	defer func() {
+		if err := close(); err != nil {
+			recordError("CloseRequest", err)
+		}
+	}()
+
+	var response PayOrderRes
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:          ctx,
+			OperationName:    PayOrderOperation,
 			OperationSummary: "Оплата заказа",
-			OperationID:      "",
+			OperationID:      "PayOrder",
 			Body:             request,
 			Params: middleware.Parameters{
 				{
@@ -421,8 +564,8 @@ func (s *Server) handleAPIV1OrdersOrderUUIDPayPostRequest(args [1]string, argsEs
 
 		type (
 			Request  = *PayOrderRequest
-			Params   = APIV1OrdersOrderUUIDPayPostParams
-			Response = APIV1OrdersOrderUUIDPayPostRes
+			Params   = PayOrderParams
+			Response = PayOrderRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -431,14 +574,14 @@ func (s *Server) handleAPIV1OrdersOrderUUIDPayPostRequest(args [1]string, argsEs
 		](
 			m,
 			mreq,
-			unpackAPIV1OrdersOrderUUIDPayPostParams,
+			unpackPayOrderParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.APIV1OrdersOrderUUIDPayPost(ctx, request, params)
+				response, err = s.h.PayOrder(ctx, request, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.APIV1OrdersOrderUUIDPayPost(ctx, request, params)
+		response, err = s.h.PayOrder(ctx, request, params)
 	}
 	if err != nil {
 		defer recordError("Internal", err)
@@ -446,145 +589,7 @@ func (s *Server) handleAPIV1OrdersOrderUUIDPayPostRequest(args [1]string, argsEs
 		return
 	}
 
-	if err := encodeAPIV1OrdersOrderUUIDPayPostResponse(response, w, span); err != nil {
-		defer recordError("EncodeResponse", err)
-		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-		}
-		return
-	}
-}
-
-// handleAPIV1OrdersPostRequest handles POST /api/v1/orders operation.
-//
-// Создаёт новый заказ на основе выбранных
-// пользователем деталей.
-//
-// POST /api/v1/orders
-func (s *Server) handleAPIV1OrdersPostRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
-	statusWriter := &codeRecorder{ResponseWriter: w}
-	w = statusWriter
-	otelAttrs := []attribute.KeyValue{
-		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/api/v1/orders"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), APIV1OrdersPostOperation,
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Add Labeler to context.
-	labeler := &Labeler{attrs: otelAttrs}
-	ctx = contextWithLabeler(ctx, labeler)
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-
-		attrSet := labeler.AttributeSet()
-		attrs := attrSet.ToSlice()
-		code := statusWriter.status
-		if code != 0 {
-			codeAttr := semconv.HTTPResponseStatusCode(code)
-			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
-		}
-		attrOpt := metric.WithAttributes(attrs...)
-
-		// Increment request counter.
-		s.requests.Add(ctx, 1, attrOpt)
-
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), attrOpt)
-	}()
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-
-			// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
-			// Span Status MUST be left unset if HTTP status code was in the 1xx, 2xx or 3xx ranges,
-			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
-			// max redirects exceeded), in which case status MUST be set to Error.
-			code := statusWriter.status
-			if code >= 100 && code < 500 {
-				span.SetStatus(codes.Error, stage)
-			}
-
-			attrSet := labeler.AttributeSet()
-			attrs := attrSet.ToSlice()
-			if code != 0 {
-				attrs = append(attrs, semconv.HTTPResponseStatusCode(code))
-			}
-
-			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: APIV1OrdersPostOperation,
-			ID:   "",
-		}
-	)
-	request, close, err := s.decodeAPIV1OrdersPostRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		defer recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response APIV1OrdersPostRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:          ctx,
-			OperationName:    APIV1OrdersPostOperation,
-			OperationSummary: "Создание нового заказа",
-			OperationID:      "",
-			Body:             request,
-			Params:           middleware.Parameters{},
-			Raw:              r,
-		}
-
-		type (
-			Request  = *CreateOrderRequest
-			Params   = struct{}
-			Response = APIV1OrdersPostRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			nil,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.APIV1OrdersPost(ctx, request)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.APIV1OrdersPost(ctx, request)
-	}
-	if err != nil {
-		defer recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeAPIV1OrdersPostResponse(response, w, span); err != nil {
+	if err := encodePayOrderResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

@@ -8,31 +8,31 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// APIV1OrdersOrderUUIDCancelPost implements POST /api/v1/orders/{order_uuid}/cancel operation.
+	// CancelOrderByUUID implements CancelOrderByUUID operation.
 	//
 	// Отменяет заказ.
 	//
 	// POST /api/v1/orders/{order_uuid}/cancel
-	APIV1OrdersOrderUUIDCancelPost(ctx context.Context, params APIV1OrdersOrderUUIDCancelPostParams) (APIV1OrdersOrderUUIDCancelPostRes, error)
-	// APIV1OrdersOrderUUIDGet implements GET /api/v1/orders/{order_uuid} operation.
-	//
-	// Возвращает информацию о заказе по его UUID.
-	//
-	// GET /api/v1/orders/{order_uuid}
-	APIV1OrdersOrderUUIDGet(ctx context.Context, params APIV1OrdersOrderUUIDGetParams) (APIV1OrdersOrderUUIDGetRes, error)
-	// APIV1OrdersOrderUUIDPayPost implements POST /api/v1/orders/{order_uuid}/pay operation.
-	//
-	// Проводит оплату ранее созданного заказа.
-	//
-	// POST /api/v1/orders/{order_uuid}/pay
-	APIV1OrdersOrderUUIDPayPost(ctx context.Context, req *PayOrderRequest, params APIV1OrdersOrderUUIDPayPostParams) (APIV1OrdersOrderUUIDPayPostRes, error)
-	// APIV1OrdersPost implements POST /api/v1/orders operation.
+	CancelOrderByUUID(ctx context.Context, params CancelOrderByUUIDParams) (CancelOrderByUUIDRes, error)
+	// CreateOrder implements CreateOrder operation.
 	//
 	// Создаёт новый заказ на основе выбранных
 	// пользователем деталей.
 	//
 	// POST /api/v1/orders
-	APIV1OrdersPost(ctx context.Context, req *CreateOrderRequest) (APIV1OrdersPostRes, error)
+	CreateOrder(ctx context.Context, req *CreateOrderRequest) (CreateOrderRes, error)
+	// GetOrderByUUID implements GetOrderByUUID operation.
+	//
+	// Возвращает информацию о заказе по его UUID.
+	//
+	// GET /api/v1/orders/{order_uuid}
+	GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (GetOrderByUUIDRes, error)
+	// PayOrder implements PayOrder operation.
+	//
+	// Проводит оплату ранее созданного заказа.
+	//
+	// POST /api/v1/orders/{order_uuid}/pay
+	PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (PayOrderRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

@@ -16,13 +16,13 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// APIV1OrdersOrderUUIDCancelPostParams is parameters of POST /api/v1/orders/{order_uuid}/cancel operation.
-type APIV1OrdersOrderUUIDCancelPostParams struct {
+// CancelOrderByUUIDParams is parameters of CancelOrderByUUID operation.
+type CancelOrderByUUIDParams struct {
 	// UUID заказа.
 	OrderUUID uuid.UUID
 }
 
-func unpackAPIV1OrdersOrderUUIDCancelPostParams(packed middleware.Parameters) (params APIV1OrdersOrderUUIDCancelPostParams) {
+func unpackCancelOrderByUUIDParams(packed middleware.Parameters) (params CancelOrderByUUIDParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "order_uuid",
@@ -33,7 +33,7 @@ func unpackAPIV1OrdersOrderUUIDCancelPostParams(packed middleware.Parameters) (p
 	return params
 }
 
-func decodeAPIV1OrdersOrderUUIDCancelPostParams(args [1]string, argsEscaped bool, r *http.Request) (params APIV1OrdersOrderUUIDCancelPostParams, _ error) {
+func decodeCancelOrderByUUIDParams(args [1]string, argsEscaped bool, r *http.Request) (params CancelOrderByUUIDParams, _ error) {
 	// Decode path: order_uuid.
 	if err := func() error {
 		param := args[0]
@@ -82,13 +82,13 @@ func decodeAPIV1OrdersOrderUUIDCancelPostParams(args [1]string, argsEscaped bool
 	return params, nil
 }
 
-// APIV1OrdersOrderUUIDGetParams is parameters of GET /api/v1/orders/{order_uuid} operation.
-type APIV1OrdersOrderUUIDGetParams struct {
+// GetOrderByUUIDParams is parameters of GetOrderByUUID operation.
+type GetOrderByUUIDParams struct {
 	// UUID заказа.
 	OrderUUID uuid.UUID
 }
 
-func unpackAPIV1OrdersOrderUUIDGetParams(packed middleware.Parameters) (params APIV1OrdersOrderUUIDGetParams) {
+func unpackGetOrderByUUIDParams(packed middleware.Parameters) (params GetOrderByUUIDParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "order_uuid",
@@ -99,7 +99,7 @@ func unpackAPIV1OrdersOrderUUIDGetParams(packed middleware.Parameters) (params A
 	return params
 }
 
-func decodeAPIV1OrdersOrderUUIDGetParams(args [1]string, argsEscaped bool, r *http.Request) (params APIV1OrdersOrderUUIDGetParams, _ error) {
+func decodeGetOrderByUUIDParams(args [1]string, argsEscaped bool, r *http.Request) (params GetOrderByUUIDParams, _ error) {
 	// Decode path: order_uuid.
 	if err := func() error {
 		param := args[0]
@@ -148,13 +148,13 @@ func decodeAPIV1OrdersOrderUUIDGetParams(args [1]string, argsEscaped bool, r *ht
 	return params, nil
 }
 
-// APIV1OrdersOrderUUIDPayPostParams is parameters of POST /api/v1/orders/{order_uuid}/pay operation.
-type APIV1OrdersOrderUUIDPayPostParams struct {
+// PayOrderParams is parameters of PayOrder operation.
+type PayOrderParams struct {
 	// UUID заказа.
 	OrderUUID uuid.UUID
 }
 
-func unpackAPIV1OrdersOrderUUIDPayPostParams(packed middleware.Parameters) (params APIV1OrdersOrderUUIDPayPostParams) {
+func unpackPayOrderParams(packed middleware.Parameters) (params PayOrderParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "order_uuid",
@@ -165,7 +165,7 @@ func unpackAPIV1OrdersOrderUUIDPayPostParams(packed middleware.Parameters) (para
 	return params
 }
 
-func decodeAPIV1OrdersOrderUUIDPayPostParams(args [1]string, argsEscaped bool, r *http.Request) (params APIV1OrdersOrderUUIDPayPostParams, _ error) {
+func decodePayOrderParams(args [1]string, argsEscaped bool, r *http.Request) (params PayOrderParams, _ error) {
 	// Decode path: order_uuid.
 	if err := func() error {
 		param := args[0]

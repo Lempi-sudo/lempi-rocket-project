@@ -7,50 +7,30 @@ import (
 	"github.com/google/uuid"
 )
 
-type APIV1OrdersOrderUUIDCancelPostConflict GenericError
+type CancelOrderByUUIDConflict GenericError
 
-func (*APIV1OrdersOrderUUIDCancelPostConflict) aPIV1OrdersOrderUUIDCancelPostRes() {}
+func (*CancelOrderByUUIDConflict) cancelOrderByUUIDRes() {}
 
-type APIV1OrdersOrderUUIDCancelPostInternalServerError GenericError
+type CancelOrderByUUIDInternalServerError GenericError
 
-func (*APIV1OrdersOrderUUIDCancelPostInternalServerError) aPIV1OrdersOrderUUIDCancelPostRes() {}
+func (*CancelOrderByUUIDInternalServerError) cancelOrderByUUIDRes() {}
 
-// APIV1OrdersOrderUUIDCancelPostNoContent is response for APIV1OrdersOrderUUIDCancelPost operation.
-type APIV1OrdersOrderUUIDCancelPostNoContent struct{}
+// CancelOrderByUUIDNoContent is response for CancelOrderByUUID operation.
+type CancelOrderByUUIDNoContent struct{}
 
-func (*APIV1OrdersOrderUUIDCancelPostNoContent) aPIV1OrdersOrderUUIDCancelPostRes() {}
+func (*CancelOrderByUUIDNoContent) cancelOrderByUUIDRes() {}
 
-type APIV1OrdersOrderUUIDCancelPostNotFound GenericError
+type CancelOrderByUUIDNotFound GenericError
 
-func (*APIV1OrdersOrderUUIDCancelPostNotFound) aPIV1OrdersOrderUUIDCancelPostRes() {}
+func (*CancelOrderByUUIDNotFound) cancelOrderByUUIDRes() {}
 
-type APIV1OrdersOrderUUIDGetInternalServerError GenericError
+type CreateOrderBadRequest GenericError
 
-func (*APIV1OrdersOrderUUIDGetInternalServerError) aPIV1OrdersOrderUUIDGetRes() {}
+func (*CreateOrderBadRequest) createOrderRes() {}
 
-type APIV1OrdersOrderUUIDGetNotFound GenericError
+type CreateOrderInternalServerError GenericError
 
-func (*APIV1OrdersOrderUUIDGetNotFound) aPIV1OrdersOrderUUIDGetRes() {}
-
-type APIV1OrdersOrderUUIDPayPostBadRequest GenericError
-
-func (*APIV1OrdersOrderUUIDPayPostBadRequest) aPIV1OrdersOrderUUIDPayPostRes() {}
-
-type APIV1OrdersOrderUUIDPayPostInternalServerError GenericError
-
-func (*APIV1OrdersOrderUUIDPayPostInternalServerError) aPIV1OrdersOrderUUIDPayPostRes() {}
-
-type APIV1OrdersOrderUUIDPayPostNotFound GenericError
-
-func (*APIV1OrdersOrderUUIDPayPostNotFound) aPIV1OrdersOrderUUIDPayPostRes() {}
-
-type APIV1OrdersPostBadRequest GenericError
-
-func (*APIV1OrdersPostBadRequest) aPIV1OrdersPostRes() {}
-
-type APIV1OrdersPostInternalServerError GenericError
-
-func (*APIV1OrdersPostInternalServerError) aPIV1OrdersPostRes() {}
+func (*CreateOrderInternalServerError) createOrderRes() {}
 
 // Ref: #
 type CreateOrderRequest struct {
@@ -108,7 +88,7 @@ func (s *CreateOrderResponse) SetTotalPrice(val float64) {
 	s.TotalPrice = val
 }
 
-func (*CreateOrderResponse) aPIV1OrdersPostRes() {}
+func (*CreateOrderResponse) createOrderRes() {}
 
 // Ref: #
 type GenericError struct {
@@ -137,6 +117,14 @@ func (s *GenericError) SetMessage(val string) {
 func (s *GenericError) SetCode(val OptNilString) {
 	s.Code = val
 }
+
+type GetOrderByUUIDInternalServerError GenericError
+
+func (*GetOrderByUUIDInternalServerError) getOrderByUUIDRes() {}
+
+type GetOrderByUUIDNotFound GenericError
+
+func (*GetOrderByUUIDNotFound) getOrderByUUIDRes() {}
 
 // NewOptNilString returns new OptNilString with value set to v.
 func NewOptNilString(v string) OptNilString {
@@ -398,7 +386,7 @@ func (s *OrderDto) SetStatus(val OrderStatus) {
 	s.Status = val
 }
 
-func (*OrderDto) aPIV1OrdersOrderUUIDGetRes() {}
+func (*OrderDto) getOrderByUUIDRes() {}
 
 // Статус заказа.
 // Ref: #/OrderStatus
@@ -450,6 +438,18 @@ func (s *OrderStatus) UnmarshalText(data []byte) error {
 	}
 }
 
+type PayOrderBadRequest GenericError
+
+func (*PayOrderBadRequest) payOrderRes() {}
+
+type PayOrderInternalServerError GenericError
+
+func (*PayOrderInternalServerError) payOrderRes() {}
+
+type PayOrderNotFound GenericError
+
+func (*PayOrderNotFound) payOrderRes() {}
+
 // Ref: #
 type PayOrderRequest struct {
 	// Способ оплаты заказа.
@@ -482,7 +482,7 @@ func (s *PayOrderResponse) SetTransactionUUID(val uuid.UUID) {
 	s.TransactionUUID = val
 }
 
-func (*PayOrderResponse) aPIV1OrdersOrderUUIDPayPostRes() {}
+func (*PayOrderResponse) payOrderRes() {}
 
 // Метод оплаты.
 // Ref: #/PaymentMethod

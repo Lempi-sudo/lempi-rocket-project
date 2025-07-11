@@ -14,17 +14,17 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// Encode encodes APIV1OrdersOrderUUIDCancelPostConflict as json.
-func (s *APIV1OrdersOrderUUIDCancelPostConflict) Encode(e *jx.Encoder) {
+// Encode encodes CancelOrderByUUIDConflict as json.
+func (s *CancelOrderByUUIDConflict) Encode(e *jx.Encoder) {
 	unwrapped := (*GenericError)(s)
 
 	unwrapped.Encode(e)
 }
 
-// Decode decodes APIV1OrdersOrderUUIDCancelPostConflict from json.
-func (s *APIV1OrdersOrderUUIDCancelPostConflict) Decode(d *jx.Decoder) error {
+// Decode decodes CancelOrderByUUIDConflict from json.
+func (s *CancelOrderByUUIDConflict) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDCancelPostConflict to nil")
+		return errors.New("invalid: unable to decode CancelOrderByUUIDConflict to nil")
 	}
 	var unwrapped GenericError
 	if err := func() error {
@@ -35,34 +35,34 @@ func (s *APIV1OrdersOrderUUIDCancelPostConflict) Decode(d *jx.Decoder) error {
 	}(); err != nil {
 		return errors.Wrap(err, "alias")
 	}
-	*s = APIV1OrdersOrderUUIDCancelPostConflict(unwrapped)
+	*s = CancelOrderByUUIDConflict(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDCancelPostConflict) MarshalJSON() ([]byte, error) {
+func (s *CancelOrderByUUIDConflict) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDCancelPostConflict) UnmarshalJSON(data []byte) error {
+func (s *CancelOrderByUUIDConflict) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
-// Encode encodes APIV1OrdersOrderUUIDCancelPostInternalServerError as json.
-func (s *APIV1OrdersOrderUUIDCancelPostInternalServerError) Encode(e *jx.Encoder) {
+// Encode encodes CancelOrderByUUIDInternalServerError as json.
+func (s *CancelOrderByUUIDInternalServerError) Encode(e *jx.Encoder) {
 	unwrapped := (*GenericError)(s)
 
 	unwrapped.Encode(e)
 }
 
-// Decode decodes APIV1OrdersOrderUUIDCancelPostInternalServerError from json.
-func (s *APIV1OrdersOrderUUIDCancelPostInternalServerError) Decode(d *jx.Decoder) error {
+// Decode decodes CancelOrderByUUIDInternalServerError from json.
+func (s *CancelOrderByUUIDInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDCancelPostInternalServerError to nil")
+		return errors.New("invalid: unable to decode CancelOrderByUUIDInternalServerError to nil")
 	}
 	var unwrapped GenericError
 	if err := func() error {
@@ -73,34 +73,34 @@ func (s *APIV1OrdersOrderUUIDCancelPostInternalServerError) Decode(d *jx.Decoder
 	}(); err != nil {
 		return errors.Wrap(err, "alias")
 	}
-	*s = APIV1OrdersOrderUUIDCancelPostInternalServerError(unwrapped)
+	*s = CancelOrderByUUIDInternalServerError(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDCancelPostInternalServerError) MarshalJSON() ([]byte, error) {
+func (s *CancelOrderByUUIDInternalServerError) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDCancelPostInternalServerError) UnmarshalJSON(data []byte) error {
+func (s *CancelOrderByUUIDInternalServerError) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
-// Encode encodes APIV1OrdersOrderUUIDCancelPostNotFound as json.
-func (s *APIV1OrdersOrderUUIDCancelPostNotFound) Encode(e *jx.Encoder) {
+// Encode encodes CancelOrderByUUIDNotFound as json.
+func (s *CancelOrderByUUIDNotFound) Encode(e *jx.Encoder) {
 	unwrapped := (*GenericError)(s)
 
 	unwrapped.Encode(e)
 }
 
-// Decode decodes APIV1OrdersOrderUUIDCancelPostNotFound from json.
-func (s *APIV1OrdersOrderUUIDCancelPostNotFound) Decode(d *jx.Decoder) error {
+// Decode decodes CancelOrderByUUIDNotFound from json.
+func (s *CancelOrderByUUIDNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDCancelPostNotFound to nil")
+		return errors.New("invalid: unable to decode CancelOrderByUUIDNotFound to nil")
 	}
 	var unwrapped GenericError
 	if err := func() error {
@@ -111,34 +111,34 @@ func (s *APIV1OrdersOrderUUIDCancelPostNotFound) Decode(d *jx.Decoder) error {
 	}(); err != nil {
 		return errors.Wrap(err, "alias")
 	}
-	*s = APIV1OrdersOrderUUIDCancelPostNotFound(unwrapped)
+	*s = CancelOrderByUUIDNotFound(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDCancelPostNotFound) MarshalJSON() ([]byte, error) {
+func (s *CancelOrderByUUIDNotFound) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDCancelPostNotFound) UnmarshalJSON(data []byte) error {
+func (s *CancelOrderByUUIDNotFound) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
-// Encode encodes APIV1OrdersOrderUUIDGetInternalServerError as json.
-func (s *APIV1OrdersOrderUUIDGetInternalServerError) Encode(e *jx.Encoder) {
+// Encode encodes CreateOrderBadRequest as json.
+func (s *CreateOrderBadRequest) Encode(e *jx.Encoder) {
 	unwrapped := (*GenericError)(s)
 
 	unwrapped.Encode(e)
 }
 
-// Decode decodes APIV1OrdersOrderUUIDGetInternalServerError from json.
-func (s *APIV1OrdersOrderUUIDGetInternalServerError) Decode(d *jx.Decoder) error {
+// Decode decodes CreateOrderBadRequest from json.
+func (s *CreateOrderBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDGetInternalServerError to nil")
+		return errors.New("invalid: unable to decode CreateOrderBadRequest to nil")
 	}
 	var unwrapped GenericError
 	if err := func() error {
@@ -149,34 +149,34 @@ func (s *APIV1OrdersOrderUUIDGetInternalServerError) Decode(d *jx.Decoder) error
 	}(); err != nil {
 		return errors.Wrap(err, "alias")
 	}
-	*s = APIV1OrdersOrderUUIDGetInternalServerError(unwrapped)
+	*s = CreateOrderBadRequest(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDGetInternalServerError) MarshalJSON() ([]byte, error) {
+func (s *CreateOrderBadRequest) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDGetInternalServerError) UnmarshalJSON(data []byte) error {
+func (s *CreateOrderBadRequest) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
-// Encode encodes APIV1OrdersOrderUUIDGetNotFound as json.
-func (s *APIV1OrdersOrderUUIDGetNotFound) Encode(e *jx.Encoder) {
+// Encode encodes CreateOrderInternalServerError as json.
+func (s *CreateOrderInternalServerError) Encode(e *jx.Encoder) {
 	unwrapped := (*GenericError)(s)
 
 	unwrapped.Encode(e)
 }
 
-// Decode decodes APIV1OrdersOrderUUIDGetNotFound from json.
-func (s *APIV1OrdersOrderUUIDGetNotFound) Decode(d *jx.Decoder) error {
+// Decode decodes CreateOrderInternalServerError from json.
+func (s *CreateOrderInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDGetNotFound to nil")
+		return errors.New("invalid: unable to decode CreateOrderInternalServerError to nil")
 	}
 	var unwrapped GenericError
 	if err := func() error {
@@ -187,209 +187,19 @@ func (s *APIV1OrdersOrderUUIDGetNotFound) Decode(d *jx.Decoder) error {
 	}(); err != nil {
 		return errors.Wrap(err, "alias")
 	}
-	*s = APIV1OrdersOrderUUIDGetNotFound(unwrapped)
+	*s = CreateOrderInternalServerError(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDGetNotFound) MarshalJSON() ([]byte, error) {
+func (s *CreateOrderInternalServerError) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDGetNotFound) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes APIV1OrdersOrderUUIDPayPostBadRequest as json.
-func (s *APIV1OrdersOrderUUIDPayPostBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*GenericError)(s)
-
-	unwrapped.Encode(e)
-}
-
-// Decode decodes APIV1OrdersOrderUUIDPayPostBadRequest from json.
-func (s *APIV1OrdersOrderUUIDPayPostBadRequest) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDPayPostBadRequest to nil")
-	}
-	var unwrapped GenericError
-	if err := func() error {
-		if err := unwrapped.Decode(d); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = APIV1OrdersOrderUUIDPayPostBadRequest(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDPayPostBadRequest) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDPayPostBadRequest) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes APIV1OrdersOrderUUIDPayPostInternalServerError as json.
-func (s *APIV1OrdersOrderUUIDPayPostInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*GenericError)(s)
-
-	unwrapped.Encode(e)
-}
-
-// Decode decodes APIV1OrdersOrderUUIDPayPostInternalServerError from json.
-func (s *APIV1OrdersOrderUUIDPayPostInternalServerError) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDPayPostInternalServerError to nil")
-	}
-	var unwrapped GenericError
-	if err := func() error {
-		if err := unwrapped.Decode(d); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = APIV1OrdersOrderUUIDPayPostInternalServerError(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDPayPostInternalServerError) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDPayPostInternalServerError) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes APIV1OrdersOrderUUIDPayPostNotFound as json.
-func (s *APIV1OrdersOrderUUIDPayPostNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*GenericError)(s)
-
-	unwrapped.Encode(e)
-}
-
-// Decode decodes APIV1OrdersOrderUUIDPayPostNotFound from json.
-func (s *APIV1OrdersOrderUUIDPayPostNotFound) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersOrderUUIDPayPostNotFound to nil")
-	}
-	var unwrapped GenericError
-	if err := func() error {
-		if err := unwrapped.Decode(d); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = APIV1OrdersOrderUUIDPayPostNotFound(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersOrderUUIDPayPostNotFound) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersOrderUUIDPayPostNotFound) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes APIV1OrdersPostBadRequest as json.
-func (s *APIV1OrdersPostBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*GenericError)(s)
-
-	unwrapped.Encode(e)
-}
-
-// Decode decodes APIV1OrdersPostBadRequest from json.
-func (s *APIV1OrdersPostBadRequest) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersPostBadRequest to nil")
-	}
-	var unwrapped GenericError
-	if err := func() error {
-		if err := unwrapped.Decode(d); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = APIV1OrdersPostBadRequest(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersPostBadRequest) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersPostBadRequest) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes APIV1OrdersPostInternalServerError as json.
-func (s *APIV1OrdersPostInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*GenericError)(s)
-
-	unwrapped.Encode(e)
-}
-
-// Decode decodes APIV1OrdersPostInternalServerError from json.
-func (s *APIV1OrdersPostInternalServerError) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode APIV1OrdersPostInternalServerError to nil")
-	}
-	var unwrapped GenericError
-	if err := func() error {
-		if err := unwrapped.Decode(d); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = APIV1OrdersPostInternalServerError(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *APIV1OrdersPostInternalServerError) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *APIV1OrdersPostInternalServerError) UnmarshalJSON(data []byte) error {
+func (s *CreateOrderInternalServerError) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -741,6 +551,82 @@ func (s *GenericError) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *GenericError) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes GetOrderByUUIDInternalServerError as json.
+func (s *GetOrderByUUIDInternalServerError) Encode(e *jx.Encoder) {
+	unwrapped := (*GenericError)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes GetOrderByUUIDInternalServerError from json.
+func (s *GetOrderByUUIDInternalServerError) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode GetOrderByUUIDInternalServerError to nil")
+	}
+	var unwrapped GenericError
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = GetOrderByUUIDInternalServerError(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *GetOrderByUUIDInternalServerError) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *GetOrderByUUIDInternalServerError) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes GetOrderByUUIDNotFound as json.
+func (s *GetOrderByUUIDNotFound) Encode(e *jx.Encoder) {
+	unwrapped := (*GenericError)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes GetOrderByUUIDNotFound from json.
+func (s *GetOrderByUUIDNotFound) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode GetOrderByUUIDNotFound to nil")
+	}
+	var unwrapped GenericError
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = GetOrderByUUIDNotFound(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *GetOrderByUUIDNotFound) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *GetOrderByUUIDNotFound) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1126,6 +1012,120 @@ func (s OrderStatus) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OrderStatus) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PayOrderBadRequest as json.
+func (s *PayOrderBadRequest) Encode(e *jx.Encoder) {
+	unwrapped := (*GenericError)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes PayOrderBadRequest from json.
+func (s *PayOrderBadRequest) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PayOrderBadRequest to nil")
+	}
+	var unwrapped GenericError
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = PayOrderBadRequest(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PayOrderBadRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PayOrderBadRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PayOrderInternalServerError as json.
+func (s *PayOrderInternalServerError) Encode(e *jx.Encoder) {
+	unwrapped := (*GenericError)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes PayOrderInternalServerError from json.
+func (s *PayOrderInternalServerError) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PayOrderInternalServerError to nil")
+	}
+	var unwrapped GenericError
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = PayOrderInternalServerError(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PayOrderInternalServerError) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PayOrderInternalServerError) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PayOrderNotFound as json.
+func (s *PayOrderNotFound) Encode(e *jx.Encoder) {
+	unwrapped := (*GenericError)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes PayOrderNotFound from json.
+func (s *PayOrderNotFound) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PayOrderNotFound to nil")
+	}
+	var unwrapped GenericError
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = PayOrderNotFound(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PayOrderNotFound) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PayOrderNotFound) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -2,7 +2,7 @@ post:
   tags:
     - Order
   summary: Отмена заказа
-  operationId: CancelOrder
+  operationId: CancelOrderByUUID
   description: Отменяет заказ
   parameters:
     - $ref: '../param/order_uuid.yaml'
