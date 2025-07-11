@@ -1,0 +1,11 @@
+type: object
+required:
+  - message
+properties:
+  message:
+    type: string
+    description: Сообщение об ошибке
+  code:
+    type: string
+    description: Код ошибки
+    nullable: true

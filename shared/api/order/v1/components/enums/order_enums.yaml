@@ -1,10 +1,11 @@
 PaymentMethod:
   type: string
   enum:
+    - UNKNOWN
     - CARD
-    - CASH
-    - BANK_TRANSFER
-    - QR
+    - SBP
+    - CREDIT_CARD
+    - INVESTOR_MONEY
   description: Метод оплаты
 
 OrderStatus:

@@ -10,13 +10,29 @@ x-ogen:
 
 tags:
   - name: Order
-    description: Операции с заказами — создание и оплата заказа
+    description: Операции с заказами — создание, оплата, получение и отмена заказа
 
 paths:
   /api/v1/orders:
     $ref: ./paths/orders.yaml
+  /api/v1/orders/{order_uuid}:
+    $ref: ./paths/order_by_uuid.yaml
+  /api/v1/orders/{order_uuid}/pay:
+    $ref: ./paths/order_pay.yaml
+  /api/v1/orders/{order_uuid}/cancel:
+    $ref: ./paths/order_cancel.yaml
 
 components:
   schemas:
     Order:
       $ref: ./components/order_dto.yaml
+    CreateOrderRequest:
+      $ref: ./components/create_order_request.yaml
+    CreateOrderResponse:
+      $ref: ./components/create_order_response.yaml
+    PayOrderRequest:
+      $ref: ./components/pay_order_request.yaml
+    PayOrderResponse:
+      $ref: ./components/pay_order_response.yaml
+    GetOrderResponse:
+      $ref: ./components/get_order_response.yaml

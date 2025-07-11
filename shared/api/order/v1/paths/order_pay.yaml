@@ -1,0 +1,27 @@
+post:
+  tags:
+    - Order
+  summary: Оплата заказа
+  operationId: PayOrder
+  description: Проводит оплату ранее созданного заказа
+  parameters:
+    - $ref: '../param/order_uuid.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/pay_order_request.yaml'
+  responses:
+    '200':
+      description: Заказ успешно оплачен
+      content:
+        application/json:
+          schema:
+            $ref: '../components/pay_order_response.yaml'
+    '400':
+      $ref: '../components/errors/bad_request_error.yaml'
+    '404':
+      $ref: '../components/errors/not_found_error.yaml'
+    '500':
+      $ref: '../components/errors/internal_server_error.yaml'
