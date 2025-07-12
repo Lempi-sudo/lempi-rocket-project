@@ -1,0 +1,5 @@
+description: Конфликт - заказ уже оплачен и не может быть отменён
+content:
+  application/json:
+    schema:
+      $ref: './generic_error.yaml'

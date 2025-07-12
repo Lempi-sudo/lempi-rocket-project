@@ -1,0 +1,5 @@
+description: Заказ не найден
+content:
+  application/json:
+    schema:
+      $ref: './generic_error.yaml'
