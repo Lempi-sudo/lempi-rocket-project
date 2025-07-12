@@ -12,14 +12,15 @@ import (
 	"syscall"
 	"time"
 
-	orderV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/openapi/order/v1"
-	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
-	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	orderV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/openapi/order/v1"
+	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
+	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 )
 
 const (
@@ -31,8 +32,10 @@ const (
 	shutdownTimeout   = 10 * time.Second
 )
 
-var ErrOrderAlreadyPaid error = errors.New("order has already paid")
-var ErrOrderNotFound error = errors.New("order not found")
+var (
+	ErrOrderAlreadyPaid error = errors.New("order has already paid")
+	ErrOrderNotFound    error = errors.New("order not found")
+)
 
 type OrderStorage struct {
 	orders map[string]*orderV1.OrderDto
@@ -207,7 +210,7 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 		paymentMethod = paymentV1.PaymentMethod_UNKNOWN_UNSPECIFIED
 	default:
 		return &orderV1.PayOrderBadRequest{
-			Code:    404, //TODO
+			Code:    400,
 			Message: "Order not found",
 		}, nil
 	}
@@ -222,7 +225,8 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 			OrderUuid:     orderUUUID,
 			UserUuid:      userUUID,
 			PaymentMethod: paymentMethod,
-		}}
+		},
+	}
 
 	payOrderResponse, err := client.PayOrder(ctx, payOrderRequest)
 	if err != nil {
@@ -260,7 +264,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 	return &orderV1.PayOrderResponse{
 		TransactionUUID: transactionUUID,
 	}, nil
-
 }
 
 func (h *OrderHandler) CancelOrderByUUID(_ context.Context, params orderV1.CancelOrderByUUIDParams) (orderV1.CancelOrderByUUIDRes, error) {
@@ -311,7 +314,6 @@ func main() {
 	orderHandler := NewOrderHandler(storage)
 
 	orderServer, err := orderV1.NewServer(orderHandler)
-
 	if err != nil {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
 	}
