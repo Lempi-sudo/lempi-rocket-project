@@ -14,6 +14,7 @@ import (
 
 	orderV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
+	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
@@ -159,6 +160,107 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 		TotalPrice: totalPrice,
 		OrderUUID:  orderUUID,
 	}, nil
+}
+
+func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
+	ctx := context.Background()
+	conn, err := grpc.NewClient(
+		paymentAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return &orderV1.PayOrderInternalServerError{
+			Message: "Internal server error",
+			Code:    500,
+		}, nil
+	}
+	defer func() {
+		if cerr := conn.Close(); cerr != nil {
+			log.Printf("failed to close connect: %v", cerr)
+		}
+	}()
+
+	orderUUUID := params.OrderUUID.String()
+	h.orderStorage.mu.RLock()
+	// defer h.orderStorage.mu.RUnlock() если делать так, то лочится updateOrder
+	order := h.orderStorage.GetOrder(orderUUUID)
+	if order == nil {
+		h.orderStorage.mu.RUnlock()
+		return &orderV1.PayOrderNotFound{
+			Code:    404,
+			Message: "Order not found",
+		}, nil
+	}
+	h.orderStorage.mu.RUnlock()
+
+	var paymentMethod paymentV1.PaymentMethod
+	switch req.GetPaymentMethod() {
+	case orderV1.PaymentMethodCARD:
+		paymentMethod = paymentV1.PaymentMethod_CARD
+	case orderV1.PaymentMethodCREDITCARD:
+		paymentMethod = paymentV1.PaymentMethod_CREDIT_CARD
+	case orderV1.PaymentMethodSBP:
+		paymentMethod = paymentV1.PaymentMethod_SBP
+	case orderV1.PaymentMethodINVESTORMONEY:
+		paymentMethod = paymentV1.PaymentMethod_INVESTOR_MONEY
+	case orderV1.PaymentMethodUNKNOWN:
+		paymentMethod = paymentV1.PaymentMethod_UNKNOWN_UNSPECIFIED
+	default:
+		return &orderV1.PayOrderBadRequest{
+			Code:    404, //TODO
+			Message: "Order not found",
+		}, nil
+	}
+
+	userUUID := order.GetUserUUID().String()
+
+	// Создаем gRPC клиент
+	client := paymentV1.NewPaymentServiceClient(conn)
+
+	payOrderRequest := &paymentV1.PayOrderRequest{
+		Order: &paymentV1.OrderInfo{
+			OrderUuid:     orderUUUID,
+			UserUuid:      userUUID,
+			PaymentMethod: paymentMethod,
+		}}
+
+	payOrderResponse, err := client.PayOrder(ctx, payOrderRequest)
+	if err != nil {
+		return &orderV1.PayOrderInternalServerError{
+			Message: "Internal server error",
+			Code:    500,
+		}, nil
+	}
+
+	transactionUUIDStr := payOrderResponse.GetUuid()
+
+	// Преобразуем строку в UUID
+	transactionUUID, err := uuid.Parse(transactionUUIDStr)
+	if err != nil {
+		return &orderV1.PayOrderInternalServerError{
+			Message: "Invalid transaction UUID",
+			Code:    500,
+		}, nil
+	}
+
+	// Создаем новый заказ с обновленными данными
+	newOrder := &orderV1.OrderDto{
+		OrderUUID:       order.GetOrderUUID(),
+		TotalPrice:      order.GetTotalPrice(),
+		UserUUID:        order.GetUserUUID(),
+		PartUuids:       order.GetPartUuids(),
+		Status:          orderV1.OrderStatusPAID,
+		TransactionUUID: orderV1.OptNilUUID{Set: true, Value: transactionUUID},
+		PaymentMethod:   orderV1.OptPaymentMethod{Set: true, Value: req.GetPaymentMethod()},
+	}
+
+	// Обновляем заказ в хранилище
+	h.orderStorage.UpdateOrder(orderUUUID, newOrder)
+
+	return &orderV1.PayOrderResponse{
+		TransactionUUID: transactionUUID,
+	}, nil
+
 }
 
 func (h *OrderHandler) CancelOrderByUUID(_ context.Context, params orderV1.CancelOrderByUUIDParams) (orderV1.CancelOrderByUUIDRes, error) {
