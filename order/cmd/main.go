@@ -12,15 +12,14 @@ import (
 	"syscall"
 	"time"
 
+	orderV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/openapi/order/v1"
+	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
+	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
-	orderV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/openapi/order/v1"
-	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
-	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 )
 
 const (

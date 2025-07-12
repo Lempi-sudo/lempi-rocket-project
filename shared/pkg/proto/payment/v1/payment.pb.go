@@ -282,6 +282,7 @@ var (
 		(*PayOrderResponse)(nil), // 3: payment.v1.PayOrderResponse
 	}
 )
+
 var file_payment_v1_payment_proto_depIdxs = []int32{
 	0, // 0: payment.v1.OrderInfo.payment_method:type_name -> payment.v1.PaymentMethod
 	1, // 1: payment.v1.PayOrderRequest.order:type_name -> payment.v1.OrderInfo
