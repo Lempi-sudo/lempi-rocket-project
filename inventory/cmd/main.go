@@ -50,7 +50,6 @@ func NewInventoryService() *inventoryService {
 				"serial_number": {Kind: &inventoryV1.Value_StringValue{StringValue: "SN-001"}},
 				"max_thrust":    {Kind: &inventoryV1.Value_DoubleValue{DoubleValue: 1500.0}},
 			},
-			// CreatedAt, UpdatedAt — заполните при необходимости
 		},
 		"550e8400-e29b-41d4-a716-446655440001": {
 			Uuid:          "550e8400-e29b-41d4-a716-446655440001",
@@ -254,15 +253,12 @@ func main() {
 		}
 	}()
 
-	// Создаем gRPC сервер
 	s := grpc.NewServer()
 
-	// Регистрируем наш сервис
 	service := NewInventoryService()
 
 	inventoryV1.RegisterInventoryServiceServer(s, service)
 
-	// Включаем рефлексию для отладки
 	reflection.Register(s)
 
 	go func() {
@@ -274,7 +270,6 @@ func main() {
 		}
 	}()
 
-	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit

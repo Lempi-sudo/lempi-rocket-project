@@ -24,7 +24,6 @@ type paymentService struct {
 }
 
 func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
-	// Генерируем UUID для нового наблюдения
 	orderUuid := req.GetOrder().OrderUuid
 	if len(orderUuid) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")

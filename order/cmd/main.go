@@ -23,10 +23,9 @@ import (
 )
 
 const (
-	orderHttpPort    = "8080"
-	inventoryAddress = "localhost:50052"
-	paymentAddress   = "localhost:50051"
-	// Таймауты для HTTP-сервера
+	orderHttpPort     = "8080"
+	inventoryAddress  = "localhost:50052"
+	paymentAddress    = "localhost:50051"
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 10 * time.Second
 )
@@ -110,23 +109,19 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 		}
 	}()
 
-	// Создаем gRPC клиент
 	client := inventoryV1.NewInventoryServiceClient(conn)
 
-	// Преобразуем UUID в строки для запроса
 	var partUuids []string
 	for _, uuid := range req.GetPartUuids() {
 		partUuids = append(partUuids, uuid.String())
 	}
 
-	// Создаем запрос к inventory сервису
 	listPartsReq := &inventoryV1.ListPartsRequest{
 		Filter: &inventoryV1.PartsFilter{
 			Uuids: partUuids,
 		},
 	}
 
-	// Отправляем запрос
 	response, err := client.ListParts(ctx, listPartsReq)
 	if err != nil {
 		log.Printf("Error calling inventory service: %v", err)
@@ -136,7 +131,6 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 		}, nil
 	}
 
-	// Проверяем, что все запрошенные детали найдены
 	if len(response.Parts) != len(partUuids) {
 		return &orderV1.CreateOrderBadRequest{
 			Message: "Some parts not found in inventory",
@@ -184,7 +178,7 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 
 	orderUUUID := params.OrderUUID.String()
 	h.orderStorage.mu.RLock()
-	// defer h.orderStorage.mu.RUnlock() если делать так, то лочится updateOrder
+	// defer h.orderStorage.mu.RUnlock() если делать так, то лочится updateOrder скорее всего из ранее вызванного RLock()
 	order := h.orderStorage.GetOrder(orderUUUID)
 	if order == nil {
 		h.orderStorage.mu.RUnlock()
@@ -216,7 +210,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 
 	userUUID := order.GetUserUUID().String()
 
-	// Создаем gRPC клиент
 	client := paymentV1.NewPaymentServiceClient(conn)
 
 	payOrderRequest := &paymentV1.PayOrderRequest{
@@ -237,7 +230,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 
 	transactionUUIDStr := payOrderResponse.GetUuid()
 
-	// Преобразуем строку в UUID
 	transactionUUID, err := uuid.Parse(transactionUUIDStr)
 	if err != nil {
 		return &orderV1.PayOrderInternalServerError{
@@ -246,7 +238,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 		}, nil
 	}
 
-	// Создаем новый заказ с обновленными данными
 	newOrder := &orderV1.OrderDto{
 		OrderUUID:       order.GetOrderUUID(),
 		TotalPrice:      order.GetTotalPrice(),
@@ -257,7 +248,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 		PaymentMethod:   orderV1.OptPaymentMethod{Set: true, Value: req.GetPaymentMethod()},
 	}
 
-	// Обновляем заказ в хранилище
 	h.orderStorage.UpdateOrder(orderUUUID, newOrder)
 
 	return &orderV1.PayOrderResponse{
@@ -266,7 +256,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 }
 
 func (h *OrderHandler) CancelOrderByUUID(_ context.Context, params orderV1.CancelOrderByUUIDParams) (orderV1.CancelOrderByUUIDRes, error) {
-	// Преобразуем UUID в строку
 	orderUUIDStr := params.OrderUUID.String()
 
 	err := h.orderStorage.CancelOrder(orderUUIDStr)
@@ -283,7 +272,6 @@ func (h *OrderHandler) CancelOrderByUUID(_ context.Context, params orderV1.Cance
 				Code:    409,
 			}, nil
 		}
-		// Возвращаем ошибку 500 - внутренняя ошибка сервера
 		return &orderV1.CancelOrderByUUIDInternalServerError{
 			Message: "Internal server error",
 			Code:    500,
@@ -318,7 +306,6 @@ func main() {
 	}
 	r := chi.NewRouter()
 
-	// Добавляем middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(10 * time.Second))
