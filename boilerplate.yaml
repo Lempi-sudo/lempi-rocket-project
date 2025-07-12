@@ -269,7 +269,7 @@ tasks:
         echo "🧪 Тестирование API микросервисов через gRPC и REST"
         
         echo "📦 Тест 1: Получение списка деталей из Inventory"
-        PARTS_RESPONSE=$({{.GRPCURL}} -plaintext -d '{"filter":{}}' localhost:50051 inventory.v1.InventoryService/ListParts)
+        PARTS_RESPONSE=$({{.GRPCURL}} -plaintext -d '{"filter":{}}' localhost:50052 inventory.v1.InventoryService/ListParts)
         
         if [[ -z "$PARTS_RESPONSE" || "$PARTS_RESPONSE" == *"error"* ]]; then
           echo "❌ Не удалось получить список деталей."
@@ -288,7 +288,7 @@ tasks:
         
         echo
         echo "🔍 Тест 2: Получение информации о детали по UUID"
-        PART_RESPONSE=$({{.GRPCURL}} -plaintext -d "{\"uuid\":\"$PART_UUID\"}" localhost:50051 inventory.v1.InventoryService/GetPart)
+        PART_RESPONSE=$({{.GRPCURL}} -plaintext -d "{\"uuid\":\"$PART_UUID\"}" localhost:50052 inventory.v1.InventoryService/GetPart)
         
         if [[ -z "$PART_RESPONSE" || "$PART_RESPONSE" == *"error"* ]]; then
           echo "❌ Не удалось получить информацию о детали."
