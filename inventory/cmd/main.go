@@ -1,6 +1,7 @@
 package main
 
 import (
+	// 1. Стандартные библиотеки Go
 	"context"
 	"fmt"
 	"log"
@@ -10,11 +11,14 @@ import (
 	"sync"
 	"syscall"
 
-	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
+	// 2. Сторонние библиотеки (начинаются с домена)
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+
+	// 3. Локальные импорты
+	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
 )
 
 const grpcPort = 50052
