@@ -23,6 +23,62 @@ import (
 	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 )
 
+func main() {
+	storage := NewOrderStorage()
+
+	orderHandler := NewOrderHandler(storage)
+
+	orderServer, err := orderV1.NewServer(orderHandler)
+	if err != nil {
+		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
+	}
+	r := chi.NewRouter()
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(10 * time.Second))
+
+	// Монтируем обработчики OpenAPI
+	r.Mount("/", orderServer)
+
+	// Запускаем HTTP-сервер
+	server := &http.Server{
+		Addr:              net.JoinHostPort("localhost", orderHttpPort),
+		Handler:           r,
+		ReadHeaderTimeout: readHeaderTimeout, // Защита от Slowloris атак - тип DDoS-атаки, при которой
+		// атакующий умышленно медленно отправляет HTTP-заголовки, удерживая соединения открытыми и истощая
+		// пул доступных соединений на сервере. ReadHeaderTimeout принудительно закрывает соединение,
+		// если клиент не успел отправить все заголовки за отведенное время.
+	}
+
+	// Запускаем сервер в отдельной горутине
+	go func() {
+		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", orderHttpPort)
+		err = server.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
+		}
+	}()
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("🛑 Завершение работы сервера...")
+
+	// Создаем контекст с таймаутом для остановки сервера
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	err = server.Shutdown(ctx)
+	if err != nil {
+		log.Printf("❌ Ошибка при остановке сервера: %v\n", err)
+	}
+
+	log.Println("✅ Сервер остановлен")
+}
+
 const (
 	orderHttpPort     = "8080"
 	inventoryAddress  = "localhost:50052"
@@ -294,60 +350,4 @@ func (h *OrderHandler) GetOrderByUUID(_ context.Context, params orderV1.GetOrder
 		}, nil
 	}
 	return order, nil
-}
-
-func main() {
-	storage := NewOrderStorage()
-
-	orderHandler := NewOrderHandler(storage)
-
-	orderServer, err := orderV1.NewServer(orderHandler)
-	if err != nil {
-		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
-	}
-	r := chi.NewRouter()
-
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(10 * time.Second))
-
-	// Монтируем обработчики OpenAPI
-	r.Mount("/", orderServer)
-
-	// Запускаем HTTP-сервер
-	server := &http.Server{
-		Addr:              net.JoinHostPort("localhost", orderHttpPort),
-		Handler:           r,
-		ReadHeaderTimeout: readHeaderTimeout, // Защита от Slowloris атак - тип DDoS-атаки, при которой
-		// атакующий умышленно медленно отправляет HTTP-заголовки, удерживая соединения открытыми и истощая
-		// пул доступных соединений на сервере. ReadHeaderTimeout принудительно закрывает соединение,
-		// если клиент не успел отправить все заголовки за отведенное время.
-	}
-
-	// Запускаем сервер в отдельной горутине
-	go func() {
-		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", orderHttpPort)
-		err = server.ListenAndServe()
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
-		}
-	}()
-
-	// Graceful shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	log.Println("🛑 Завершение работы сервера...")
-
-	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-	defer cancel()
-
-	err = server.Shutdown(ctx)
-	if err != nil {
-		log.Printf("❌ Ошибка при остановке сервера: %v\n", err)
-	}
-
-	log.Println("✅ Сервер остановлен")
 }
