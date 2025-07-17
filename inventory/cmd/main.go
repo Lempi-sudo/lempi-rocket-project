@@ -1,7 +1,7 @@
 package main
 
 import (
-	// 1. Стандартные библиотеки Go
+	// 1. Стандартные библиотеки Go.
 	"context"
 	"fmt"
 	"log"
@@ -11,13 +11,13 @@ import (
 	"sync"
 	"syscall"
 
-	// 2. Сторонние библиотеки (начинаются с домена)
+	// 2. Сторонние библиотеки (начинаются с домена).
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	// 3. Локальные импорты
+	// 3. Локальные импорты.
 	inventoryV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/inventory/v1"
 )
 
@@ -66,6 +66,7 @@ type inventoryService struct {
 	mu    sync.RWMutex
 }
 
+// NewInventoryService returns inventoryService instanse.
 func NewInventoryService() *inventoryService {
 	parts := map[string]*inventoryV1.Part{
 		"550e8400-e29b-41d4-a716-446655440000": {
@@ -167,6 +168,9 @@ func NewInventoryService() *inventoryService {
 	return &inventoryService{parts: parts}
 }
 
+// GetPart возвращает информацию о детали по её UUID.
+//
+// Если UUID отсутствует в запросе или не найден в хранилище, возвращается ошибка с соответствующим кодом gRPC.
 func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	uid := req.GetUuid()
 	if len(uid) == 0 {
@@ -183,6 +187,10 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 	return &inventoryV1.GetPartResponse{Part: part}, nil
 }
 
+// ListParts возвращает список деталей, соответствующих заданным фильтрам.
+//
+// Если фильтр не указан, возвращаются все детали. Поддерживается фильтрация по UUID, имени, категории,
+// стране производителя и тегам.
 func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

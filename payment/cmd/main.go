@@ -61,6 +61,10 @@ type paymentService struct {
 	paymentV1.UnimplementedPaymentServiceServer
 }
 
+// PayOrder обрабатывает запрос на оплату заказа.
+//
+// Проверяет корректность UUID заказа и пользователя, а также наличие метода оплаты.
+// В случае успешной оплаты возвращает сгенерированный UUID транзакции.
 func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
 	orderUuid := req.GetOrder().OrderUuid
 	if len(orderUuid) == 0 {
