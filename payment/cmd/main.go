@@ -49,6 +49,10 @@ func main() {
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	defer func() {
+		signal.Stop(quit)
+		close(quit)
+	}()
 	<-quit
 	log.Println("🛑 Shutting down gRPC server...")
 	s.GracefulStop()
