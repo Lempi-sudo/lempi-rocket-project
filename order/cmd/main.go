@@ -143,15 +143,19 @@ func (s *OrderStorage) UpdateOrder(uuid string, order *orderV1.OrderDto) {
 func (s *OrderStorage) CancelOrder(uuid string) error {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	if _, ok := s.orders[uuid]; !ok {
 		return ErrOrderNotFound
 	}
+
 	if s.orders[uuid].Status == orderV1.OrderStatusPAID {
 		return ErrOrderAlreadyPaid
 	}
+
 	if s.orders[uuid].Status == orderV1.OrderStatusPENDINGPAYMENT {
 		s.orders[uuid].Status = orderV1.OrderStatusCANCELLED
 	}
+
 	return nil
 }
 
@@ -166,7 +170,13 @@ func NewOrderHandler(storage *OrderStorage) *OrderHandler {
 	}
 }
 
-func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+func closeConnection(conn *grpc.ClientConn) {
+	if cerr := conn.Close(); cerr != nil {
+		log.Printf("failed to close connect: %v", cerr)
+	}
+}
+
+func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
 	conn, err := grpc.NewClient(
 		inventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -177,11 +187,7 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrder
 			Code:    500,
 		}, nil
 	}
-	defer func() {
-		if cerr := conn.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
-		}
-	}()
+	defer closeConnection(conn)
 
 	client := inventoryV1.NewInventoryServiceClient(conn)
 
@@ -249,11 +255,7 @@ func (h *OrderHandler) PayOrder(ctx context.Context, req *orderV1.PayOrderReques
 			Code:    500,
 		}, nil
 	}
-	defer func() {
-		if cerr := conn.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
-		}
-	}()
+	defer closeConnection(conn)
 
 	orderUUUID := params.OrderUUID.String()
 	h.orderStorage.mu.RLock()
