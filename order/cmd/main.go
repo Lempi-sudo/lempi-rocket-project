@@ -166,8 +166,7 @@ func NewOrderHandler(storage *OrderStorage) *OrderHandler {
 	}
 }
 
-func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
-	ctx := context.Background()
+func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
 	conn, err := grpc.NewClient(
 		inventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -196,8 +195,9 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 			Uuids: partUuids,
 		},
 	}
-
-	response, err := client.ListParts(ctx, listPartsReq)
+	ctxListPart, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	response, err := client.ListParts(ctxListPart, listPartsReq)
 	if err != nil {
 		log.Printf("Error calling inventory service: %v", err)
 		return &orderV1.CreateOrderInternalServerError{
@@ -218,7 +218,13 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 		totalPrice += part.Price
 	}
 
-	orderUUID, _ := uuid.NewRandom()
+	orderUUID, err := uuid.NewRandom()
+	if err != nil {
+		return &orderV1.CreateOrderInternalServerError{
+			Message: "Failed to generate UUID",
+			Code:    500,
+		}, nil
+	}
 	h.orderStorage.UpdateOrder(orderUUID.String(),
 		&orderV1.OrderDto{
 			OrderUUID:  orderUUID,
@@ -233,8 +239,7 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 	}, nil
 }
 
-func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
-	ctx := context.Background()
+func (h *OrderHandler) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
 	conn, err := grpc.NewClient(
 		paymentAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -294,8 +299,9 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 			PaymentMethod: paymentMethod,
 		},
 	}
-
-	payOrderResponse, err := client.PayOrder(ctx, payOrderRequest)
+	ctxTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	payOrderResponse, err := client.PayOrder(ctxTimeout, payOrderRequest)
 	if err != nil {
 		return &orderV1.PayOrderInternalServerError{
 			Message: "Internal server error",
