@@ -195,9 +195,9 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrder
 			Uuids: partUuids,
 		},
 	}
-	ctxListPart, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	response, err := client.ListParts(ctxListPart, listPartsReq)
+	//ctxListPart, cancel := context.WithTimeout(ctx, 5*time.Second)
+	//defer cancel()
+	response, err := client.ListParts(ctx, listPartsReq)
 	if err != nil {
 		log.Printf("Error calling inventory service: %v", err)
 		return &orderV1.CreateOrderInternalServerError{
