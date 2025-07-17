@@ -80,11 +80,20 @@ func main() {
 }
 
 const (
-	orderHttpPort     = "8080"
-	inventoryAddress  = "localhost:50052"
-	paymentAddress    = "localhost:50051"
+	// orderHttpPort — порт для HTTP-сервера заказов.
+	orderHttpPort = "8080"
+
+	// inventoryAddress — адрес gRPC-сервера инвентаря.
+	inventoryAddress = "localhost:50052"
+
+	// paymentAddress — адрес gRPC-сервера оплаты.
+	paymentAddress = "localhost:50051"
+
+	// readHeaderTimeout — таймаут чтения HTTP-заголовков.
 	readHeaderTimeout = 5 * time.Second
-	shutdownTimeout   = 10 * time.Second
+
+	// shutdownTimeout — таймаут для graceful shutdown сервера.
+	shutdownTimeout = 10 * time.Second
 )
 
 var (
@@ -97,12 +106,16 @@ type OrderStorage struct {
 	mu     sync.RWMutex
 }
 
+// NewOrderStorage создаёт и возвращает новый экземпляр OrderStorage.
 func NewOrderStorage() *OrderStorage {
 	return &OrderStorage{
 		orders: make(map[string]*orderV1.OrderDto),
 	}
 }
 
+// GetOrder возвращает заказ по UUID из OrderStorage.
+//
+// Если заказ с указанным UUID не найден, возвращается nil.
 func (s *OrderStorage) GetOrder(uuid string) *orderV1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -115,6 +128,7 @@ func (s *OrderStorage) GetOrder(uuid string) *orderV1.OrderDto {
 	return order
 }
 
+// UpdateOrder сохраняет или обновляет заказ по UUID.
 func (s *OrderStorage) UpdateOrder(uuid string, order *orderV1.OrderDto) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -122,6 +136,10 @@ func (s *OrderStorage) UpdateOrder(uuid string, order *orderV1.OrderDto) {
 	s.orders[uuid] = order
 }
 
+// CancelOrder устанавливает статус заказа с указанным UUID в OrderStatusCANCELLED.
+//
+// Если заказ уже оплачен, возвращается ошибка ErrOrderAlreadyPaid.
+// Если заказ не найден, возвращается ошибка ErrOrderNotFound.
 func (s *OrderStorage) CancelOrder(uuid string) error {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
