@@ -286,6 +286,6 @@ func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPar
 		}
 		filteredParts = tempParts
 	}
-
+	log.Println("Inventory return order following by filter rules")
 	return &inventoryV1.ListPartsResponse{Parts: filteredParts}, nil
 }

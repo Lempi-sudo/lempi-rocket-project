@@ -176,7 +176,7 @@ func closeConnection(conn *grpc.ClientConn) {
 	}
 }
 
-func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
 	conn, err := grpc.NewClient(
 		inventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -201,8 +201,10 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 			Uuids: partUuids,
 		},
 	}
-	ctxNew := context.Background()
-	response, err := client.ListParts(ctxNew, listPartsReq)
+	ctxListPart, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	log.Printf("ListParts GRPC ENVOKE")
+	response, err := client.ListParts(ctxListPart, listPartsReq)
 	if err != nil {
 		log.Printf("Error calling inventory service: %v", err)
 		return &orderV1.CreateOrderInternalServerError{
@@ -302,8 +304,10 @@ func (h *OrderHandler) PayOrder(ctx context.Context, req *orderV1.PayOrderReques
 	}
 	ctxTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
+	log.Printf("PAY ORDER GRPC ENVOKE")
 	payOrderResponse, err := client.PayOrder(ctxTimeout, payOrderRequest)
 	if err != nil {
+		log.Printf("Error calling payment service: %v", err)
 		return &orderV1.PayOrderInternalServerError{
 			Message: "Internal server error",
 			Code:    500,
