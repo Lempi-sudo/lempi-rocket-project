@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -9,14 +8,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/grpc/status"
 
+	paymentApiV1 "github.com/Lempi-sudo/lempi-rocket-project/payment/internal/api/payment/v1"
 	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 )
+
+const grpcPort = 50051
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
@@ -33,7 +32,7 @@ func main() {
 
 	s := grpc.NewServer()
 
-	service := &paymentService{}
+	service := paymentApiV1.NewPaymentService()
 	paymentV1.RegisterPaymentServiceServer(s, service)
 	reflection.Register(s)
 
@@ -57,37 +56,4 @@ func main() {
 	log.Println("🛑 Shutting down gRPC server...")
 	s.GracefulStop()
 	log.Println("✅ Server stopped")
-}
-
-const grpcPort = 50051
-
-type paymentService struct {
-	paymentV1.UnimplementedPaymentServiceServer
-}
-
-// PayOrder обрабатывает запрос на оплату заказа.
-//
-// Проверяет корректность UUID заказа и пользователя, а также наличие метода оплаты.
-// В случае успешной оплаты возвращает сгенерированный UUID транзакции.
-func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
-	orderUuid := req.GetOrder().OrderUuid
-	if len(orderUuid) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")
-	}
-
-	payment_method := req.GetOrder().PaymentMethod
-	if payment_method == paymentV1.PaymentMethod_UNKNOWN_UNSPECIFIED {
-		return nil, status.Errorf(codes.InvalidArgument, "Payment method unspecified ")
-	}
-
-	userUuid := req.GetOrder().UserUuid
-	if len(userUuid) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")
-	}
-
-	paymentUUID := uuid.NewString()
-	log.Printf("Оплата прошла успешно, transaction_uuid: %s", paymentUUID)
-	return &paymentV1.PayOrderResponse{
-		Uuid: paymentUUID,
-	}, nil
 }
