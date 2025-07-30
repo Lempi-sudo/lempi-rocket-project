@@ -5,7 +5,7 @@ import (
 	"log"
 
 	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
-	"github.com/google/uuid"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -30,7 +30,7 @@ func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")
 	}
 
-	paymentUUID := uuid.NewString()
+	paymentUUID := p.serverPayment.Pay()
 	log.Printf("Оплата прошла успешно, transaction_uuid: %s", paymentUUID)
 	return &paymentV1.PayOrderResponse{
 		Uuid: paymentUUID,

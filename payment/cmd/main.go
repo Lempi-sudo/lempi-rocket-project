@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	paymentApiV1 "github.com/Lempi-sudo/lempi-rocket-project/payment/internal/api/payment/v1"
+	paymentService "github.com/Lempi-sudo/lempi-rocket-project/payment/internal/service/payment"
 	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 )
 
@@ -32,7 +33,8 @@ func main() {
 
 	s := grpc.NewServer()
 
-	service := paymentApiV1.NewPaymentService()
+	paymentSvc := paymentService.NewService()
+	service := paymentApiV1.NewPaymentService(paymentSvc)
 	paymentV1.RegisterPaymentServiceServer(s, service)
 	reflection.Register(s)
 
