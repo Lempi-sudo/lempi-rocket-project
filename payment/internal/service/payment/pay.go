@@ -1,8 +1,9 @@
 package payment
 
 import (
-	modelError "github.com/Lempi-sudo/lempi-rocket-project/payment/internal/model"
 	"github.com/google/uuid"
+
+	modelError "github.com/Lempi-sudo/lempi-rocket-project/payment/internal/model"
 )
 
 func (p *service) Pay() (string, error) {
