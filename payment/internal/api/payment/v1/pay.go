@@ -30,7 +30,10 @@ func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")
 	}
 
-	paymentUUID := p.serverPayment.Pay()
+	paymentUUID, err := p.serverPayment.Pay()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate transaction uuid: %v", err)
+	}
 	log.Printf("Оплата прошла успешно, transaction_uuid: %s", paymentUUID)
 	return &paymentV1.PayOrderResponse{
 		Uuid: paymentUUID,
