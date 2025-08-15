@@ -245,7 +245,7 @@ tasks:
         {{.MOCKERY}}
 
   test-coverage:
-    desc: "Тесты с покрытием бизнес-логики (service/repository), отчёт по каждому модулю + общий"
+    desc: "Тесты с покрытием бизнес-логики (service/repository/api), отчёт по каждому модулю + общий"
     cmds:
       - |
         echo "🧪 Запускаем расчёт покрытия..."
@@ -257,8 +257,8 @@ tasks:
           echo "📦 Обрабатываем модуль: $mod"
         
           TARGET_PKGS=$(go list ./$mod/... \
-            | grep -E '/(internal/(service|repository))' \
-            | grep -vE '/(mocks|testdata|pkg|api|proto|pb|cmd)' \
+            | grep -E '/(internal/(service|repository|api))' \
+            | grep -vE '/(mocks|testdata|pkg|proto|pb|cmd)' \
             | paste -sd "," -)
         
           if [ -z "$TARGET_PKGS" ]; then
