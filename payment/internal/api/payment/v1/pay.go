@@ -14,10 +14,10 @@ import (
 //
 // Проверяет корректность UUID заказа и пользователя, а также наличие метода оплаты.
 // В случае успешной оплаты возвращает сгенерированный UUID транзакции.
-func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
+func (p *paymentAPI) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
 	orderUuid := req.GetOrder().OrderUuid
 	if len(orderUuid) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")
+		return nil, status.Errorf(codes.InvalidArgument, "Bad orderUuid")
 	}
 
 	payment_method := req.GetOrder().PaymentMethod
@@ -27,7 +27,7 @@ func (p *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 
 	userUuid := req.GetOrder().UserUuid
 	if len(userUuid) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "Bad uuid")
+		return nil, status.Errorf(codes.InvalidArgument, "Bad userUuid")
 	}
 
 	paymentUUID, err := p.serverPayment.Pay()

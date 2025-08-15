@@ -5,14 +5,14 @@ import (
 	paymentV1 "github.com/Lempi-sudo/lempi-rocket-project/shared/pkg/proto/payment/v1"
 )
 
-type paymentService struct {
+type paymentAPI struct {
 	paymentV1.UnimplementedPaymentServiceServer
 
 	serverPayment service.PaymentService
 }
 
-func NewPaymentService(server service.PaymentService) *paymentService {
-	return &paymentService{
+func NewPaymentAPI(server service.PaymentService) *paymentAPI {
+	return &paymentAPI{
 		serverPayment: server,
 	}
 }
