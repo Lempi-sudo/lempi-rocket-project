@@ -91,3 +91,69 @@ func (s *APISuite) TestPayEmptyUUID() {
 
 	s.Require().Nil(response)
 }
+
+func (s *APISuite) TestPaymentInvalidOrderUuid() {
+	var (
+		userUuid      = gofakeit.UUID()
+		orderUuid     = ""
+		paymentMethod = paymentV1.PaymentMethod_CARD
+	)
+
+	req := &paymentV1.PayOrderRequest{
+		Order: &paymentV1.OrderInfo{
+			OrderUuid:     orderUuid,
+			UserUuid:      userUuid,
+			PaymentMethod: paymentMethod,
+		},
+	}
+	response, err := s.api.PayOrder(s.ctx, req)
+	st, ok := status.FromError(err)
+	s.Require().True(ok)
+	s.Require().Equal(codes.InvalidArgument, st.Code())
+	s.Require().Error(err)
+	s.Require().Nil(response)
+}
+
+func (s *APISuite) TestPaymentInvalidUserUuid() {
+	var (
+		userUuid      = ""
+		orderUuid     = gofakeit.UUID()
+		paymentMethod = paymentV1.PaymentMethod_CARD
+	)
+
+	req := &paymentV1.PayOrderRequest{
+		Order: &paymentV1.OrderInfo{
+			OrderUuid:     orderUuid,
+			UserUuid:      userUuid,
+			PaymentMethod: paymentMethod,
+		},
+	}
+	response, err := s.api.PayOrder(s.ctx, req)
+	st, ok := status.FromError(err)
+	s.Require().True(ok)
+	s.Require().Equal(codes.InvalidArgument, st.Code())
+	s.Require().Error(err)
+	s.Require().Nil(response)
+}
+
+func (s *APISuite) TestPaymentInvalidPaymentMethod() {
+	var (
+		userUuid      = gofakeit.UUID()
+		orderUuid     = gofakeit.UUID()
+		paymentMethod = paymentV1.PaymentMethod_UNKNOWN_UNSPECIFIED
+	)
+
+	req := &paymentV1.PayOrderRequest{
+		Order: &paymentV1.OrderInfo{
+			OrderUuid:     orderUuid,
+			UserUuid:      userUuid,
+			PaymentMethod: paymentMethod,
+		},
+	}
+	response, err := s.api.PayOrder(s.ctx, req)
+	st, ok := status.FromError(err)
+	s.Require().True(ok)
+	s.Require().Equal(codes.InvalidArgument, st.Code())
+	s.Require().Error(err)
+	s.Require().Nil(response)
+}
