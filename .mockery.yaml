@@ -11,4 +11,11 @@ packages:
   github.com/Lempi-sudo/lempi-rocket-project/payment/internal/service:
     config:
       include-regex: ".*"
+  github.com/Lempi-sudo/lempi-rocket-project/inventory/internal/service:
+    config:
+      include-regex: ".*"
+  github.com/Lempi-sudo/lempi-rocket-project/inventory/internal/repository:
+    config:
+      include-regex: ".*"
+
 
